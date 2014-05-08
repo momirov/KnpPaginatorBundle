@@ -25,7 +25,7 @@ class Configuration implements ConfigurationInterface
                         ->booleanNode('distinct')->defaultTrue()->end()
                     ->end()
                 ->end()
-                ->arrayNode('synced_request_params')
+                ->arrayNode('clear_request_params')
                     ->info('List of $_GET parameters to be synchronized with the Request object parameters.')
                     ->addDefaultsIfNotSet()
                     ->children()

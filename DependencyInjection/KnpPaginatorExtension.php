@@ -32,19 +32,19 @@ class KnpPaginatorExtension extends Extension
         $container->setParameter('knp_paginator.page_range', $config['page_range']);
 
         $options = array();
-        if ($config['synced_request_params']['sort_param']) {
+        if ($config['clear_request_params']['sort_param']) {
             $options[] = 'sortFieldParameterName';
         }
-        if ($config['synced_request_params']['sort_direction_param']) {
+        if ($config['clear_request_params']['sort_direction_param']) {
             $options[] = 'sortDirectionParameterName';
         }
-        if ($config['synced_request_params']['filter_field_param']) {
+        if ($config['clear_request_params']['filter_field_param']) {
             $options[] = 'filterFieldParameterName';
         }
-        if ($config['synced_request_params']['filter_value_param']) {
+        if ($config['clear_request_params']['filter_value_param']) {
             $options[] = 'filterValueParameterName';
         }
-        $container->setParameter('knp_paginator.synced_request_params', $options);
+        $container->setParameter('knp_paginator.clear_request_params', $options);
 
         $paginatorDef = $container->getDefinition('knp_paginator');
         $paginatorDef->addMethodCall('setDefaultPaginatorOptions', array(array(
