@@ -3,16 +3,16 @@
 namespace Knp\Bundle\PaginatorBundle\Subscriber;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Knp\Component\Pager\Event\ItemsEvent;
 use Knp\Component\Pager\Event\AfterEvent;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class RequestSubscriber implements EventSubscriberInterface
 {
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface
+     * @var \Symfony\Component\HttpFoundation\RequestStack
      */
-    protected $container;
+    protected $requestStack;
 
     /**
      * @var array
@@ -20,19 +20,13 @@ class RequestSubscriber implements EventSubscriberInterface
     protected $params;
 
     /**
-     * @var array The original values of the parameters in $_GET
-     */
-    protected $get;
-
-    /**
      * @param \Symfony\Component\DependencyInjection\ContainerInterface $request The request object
      * @param array                                                     $params  The keys of the fields from the Paginator options to synchronize
      */
-    public function __construct(ContainerInterface $container, $params = array())
+    public function __construct(RequestStack $requestStack, $params = array())
     {
-        $this->container = $container;
+        $this->requestStack = $requestStack;
         $this->params = $params;
-        $this->get = array();
     }
 
     /**
@@ -44,30 +38,24 @@ class RequestSubscriber implements EventSubscriberInterface
             if (isset($event->options[$option])) {
                 $name = $event->options[$option];
 
-                if (null !== $this->container->get('request')->get($name)
-                    && (!array_key_exists($name, $_GET) || $_GET[$name] !== $this->container->get('request')->get($name))
+                if (null !== $this->requestStack->getCurrentRequest()->get($name)
+                    && (!array_key_exists($name, $_GET) || $_GET[$name] !== $this->requestStack->get('request')->get($name))
                 ) {
-                    $this->get[$name] = isset($_GET[$name]) ?: null;
-                    $_GET[$name] = $this->container->get('request')->get($name);
+                    $_GET[$name] = $this->requestStack->getCurrentRequest()->get($name);
                 }
             }
         }
     }
 
     /**
-     * Restore $_GET
+     * Unset $_GET variables
      */
     public function after(AfterEvent $event)
     {
-        foreach ($this->get as $name => $value) {
-            if (null === $value) {
-                unset($_GET[$name]);
-            } else {
-                $_GET[$name] = $value;
-            }
+        $options = $event->getPaginationView()->getPaginatorOptions();
+        foreach ($this->params as $name) {
+            unset($_GET[$options[$name]]);
         }
-
-        $this->get = array();
     }
 
     /**

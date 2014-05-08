@@ -18,7 +18,7 @@
 
         <service id="knp_paginator.subscriber.request" class="Knp\Bundle\PaginatorBundle\Subscriber\RequestSubscriber">
             <tag name="knp_paginator.subscriber" />
-            <argument type="service" id="service_container" />
+            <argument type="service" id="request_stack" />
             <argument>%knp_paginator.synced_request_params%</argument>
         </service>
 
