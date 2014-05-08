@@ -39,7 +39,7 @@ class RequestSubscriber implements EventSubscriberInterface
                 $name = $event->options[$option];
 
                 if (null !== $this->requestStack->getCurrentRequest()->get($name)
-                    && (!array_key_exists($name, $_GET) || $_GET[$name] !== $this->requestStack->get('request')->get($name))
+                    && (!array_key_exists($name, $_GET) || $_GET[$name] !== $this->requestStack->getCurrentRequest()->get($name))
                 ) {
                     $_GET[$name] = $this->requestStack->getCurrentRequest()->get($name);
                 }
